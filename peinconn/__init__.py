@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from .extensions import db
-import os
+from .views.web import web
+import os  
 
 def create_app():
     app = Flask(__name__)
@@ -9,8 +10,11 @@ def create_app():
 
     db.init_app(app)
 
-    return app
+    app.register_blueprint(web) 
 
-from peinconn import views
+    return app
+   
+ 
+
 
 

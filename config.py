@@ -28,7 +28,7 @@ class Config(object):
     UPLOAD_FOLDER = 'peinconn/static/images/users/uploads'
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:////" + os.path.join(basedir, 'peinconn.db')
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "peinconn.db")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = True  
 

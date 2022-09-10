@@ -1,31 +1,36 @@
-from peinconn import app
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import Model
 from flask_marshmallow import Marshmallow
 import os
 from .extensions import db
 import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declared_attr, has_inherited_table
 from datetime import datetime
-
-db = SQLAlchemy(app)
-
-ma = Marshmallow(app)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-class TimestampModel(Model):
-    @declared_attr
-    def createdAt(cls):
-        return sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    def updaetdAt(cls):
-        return sa.Column(sa.DateTime, onupdate=datetime.utcnow)    
+
+class CommonField(db.Model):
+
+    __abstract__ = True
+
+    id = db.Column(db.Integer, primary_key=True)
+    created_At = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_At = db.Column(db.DateTime, onupdate=datetime.utcnow)    
 
 # db = SQLAlchemy(app, model_class=TimestampModel)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+user_hobby = db.Table('user_hobby',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True))
+
+class Country(CommonField):
+    country = db.Column(db.String(80), unique=True, nullable=False)
+    user = db.relationship('User', backref='country', lazy=True)    
+
+class User(CommonField):
+    
     username = db.Column(db.String(80), unique=True, nullable=False)
-    name = db.Column(db.String(80), nullable=False)
+    name = CommonField
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     introduction = db.Column(db.Text, nullable=True)
@@ -36,58 +41,36 @@ class User(db.Model):
     is_active = db.Column(db.SmallInteger, default=1, nullable=False)
     date_joined = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     last_login = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    interests = db.relationship('Interest', secondary=user_hobby, lazy='subquery',
+        backref=db.backref('users', lazy=True))
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'),
+        nullable=False)    
+    activity = db.relationship('Activity', backref='user', lazy=True)     
+    liked = db.relationship('Liked', backref='user', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.username
 
-# class Interests(models.Model):
-#     hobbies = models.CharField(max_length=100, unique=True)
-#     user_hobby = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="hobbysist")
-#     def __str__(self):
-#         return f"{self.user_hobby}"
-
-# class Countries(models.Model):
-#     country = models.CharField(max_length=100, unique=True, default=None)
-#     user_country = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="citizen")
-#     def __str__(self):
-#         return f"{self.user_country}"
+class Interest(CommonField):
+    hobbies = db.Column(db.String(80), unique=True, nullable=False)
+    activity = db.relationship('Activity', backref='interest', lazy=True)
 
 
-# class Activities(models.Model):
-#     poster = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="poster")
-#     activity = models.TextField()
-#     picture = models.ImageField(upload_to="img/%y")
-#     hobby = models.ForeignKey(Interests, on_delete=models.CASCADE, default=None, related_name="post_hobby")
-#     likes = models.IntegerField(default=0)
-#     timestamp = models.DateTimeField(auto_now_add=True)
+class Activity(CommonField):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+        nullable=False)
+    activity = db.Column(db.Text, nullable=True)
+    picture = db.Column(db.String, nullable=True)
+    interest_id = db.Column(db.Integer, db.ForeignKey('interest.id'),
+        nullable=False) 
+    like_no = db.Column(db.Integer, default=0)
+    liked = db.relationship('Liked', backref='activity', lazy=True)
 
-#     def serialize(self):
-#         return {
-#             "id": self.id,
-#             "poster": self.poster.username,
-#             "posterImage": self.poster.userImage.url,
-#             "activity": self.activity,
-#             "picture": self.picture.url,
-#             "hobby": self.hobby.hobbies,
-#             "likes": self.likes,
-#             "timestamp": self.timestamp.strftime("%b %d, %Y, %I:%M %p")
-#         }
+class Liked(CommonField):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+        nullable=False)
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'),
+        nullable=False)
+    is_liked = db.Column(db.SmallInteger, default=0, nullable=False)
 
-#     @property
-#     def picture_url(self):
-#         if self.picture and hasattr(self.picture, 'url'):
-#             return self.picture_url
-
-# class Liked(models.Model):
-#     liker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="post_liker")
-#     activity = models.ForeignKey(Activities, on_delete=models.CASCADE, related_name="post")
-#     is_liked = models.BooleanField(default=False)
-
-#     def serialize(self):
-#         return {
-#             "id": self.id,
-#             "liker": self.liker.username,
-#             "activity": self.activity.activity,
-#             "is_liked": self.is_liked
-#         }        
 
