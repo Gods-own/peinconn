@@ -1,0 +1,18 @@
+{% extends "layouts/form-layout.html" %}
+
+<form action="/">
+  {{ form.hidden_tag() }}
+  <div>{{ form.name.label }} {{ form.name() }}</div>
+  <div>{{ form.username.label }} {{ form.username() }}</div>
+  <div>{{ form.email.label }} {{ form.email() }}</div>
+  <div>{{ form.gender.label }} {{ form.gender() }}</div>
+  <div>{{ form.date_of_birth.label }} {{ form.date_of_birth() }}</div>
+  <div>{{ form.country.label }} {{ form.country() }}</div>
+  <div>{{ form.password.label }} {{ form.password() }}</div>
+  <div>
+    {{ form.password_confirmation.label }} {{ form.password_confirmation() }}
+  </div>
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>

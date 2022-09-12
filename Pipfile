@@ -8,6 +8,10 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+country-list = "*"
+flask-wtf = "*"
+email-validator = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

@@ -44,7 +44,7 @@ class User(CommonField):
     interests = db.relationship('Interest', secondary=user_hobby, lazy='subquery',
         backref=db.backref('users', lazy=True))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'),
-        nullable=False)    
+        nullable=False, ondelete="CASCADE")    
     activity = db.relationship('Activity', backref='user', lazy=True)     
     liked = db.relationship('Liked', backref='user', lazy=True)
 
