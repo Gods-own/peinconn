@@ -12,6 +12,7 @@ country-list = "*"
 flask-wtf = "*"
 email-validator = "*"
 python-dotenv = "*"
+flask-migrate = "*"
 
 [dev-packages]
 

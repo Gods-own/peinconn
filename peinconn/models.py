@@ -24,13 +24,12 @@ user_hobby = db.Table('user_hobby',
     db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True))
 
 class Country(CommonField):
-    country = db.Column(db.String(80), unique=True, nullable=False)
-    user = db.relationship('User', backref='country', lazy=True)    
+    country = db.Column(db.String(80), unique=True, nullable=False)  
 
 class User(CommonField):
     
     username = db.Column(db.String(80), unique=True, nullable=False)
-    name = CommonField
+    name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     introduction = db.Column(db.Text, nullable=True)
@@ -42,34 +41,35 @@ class User(CommonField):
     date_joined = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     last_login = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     interests = db.relationship('Interest', secondary=user_hobby, lazy='subquery',
-        backref=db.backref('users', lazy=True))
+        backref=db.backref('interest_users', lazy=True))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=False)    
-    activity = db.relationship('Activity', backref='user', lazy=True)     
-    liked = db.relationship('Liked', backref='user', lazy=True)
+    country = db.relationship('Country', backref=db.backref('country_users', lazy=True), lazy=True)    
 
     def __repr__(self):
         return '<User %r>' % self.username
 
 class Interest(CommonField):
     hobbies = db.Column(db.String(80), unique=True, nullable=False)
-    activity = db.relationship('Activity', backref='interest', lazy=True)
 
 
 class Activity(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
         nullable=False)
+    user = db.relationship('User', backref=db.backref('activity_users', lazy=True), lazy=True) 
     activity = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String, nullable=True)
     interest_id = db.Column(db.Integer, db.ForeignKey('interest.id'),
         nullable=False) 
+    interest = db.relationship('Interest', backref=db.backref('activities_interests', lazy=True), lazy=True)    
     like_no = db.Column(db.Integer, default=0)
-    liked = db.relationship('Liked', backref='activity', lazy=True)
 
 class Liked(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
         nullable=False)
+    user = db.relationship('User', backref=db.backref('liked_users', lazy=True), lazy=True)         
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'),
         nullable=False)
+    activity = db.relationship('Activity', backref=db.backref('liked_activities', lazy=True), lazy=True)         
     is_liked = db.Column(db.SmallInteger, default=0, nullable=False)
 
 
