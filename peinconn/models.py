@@ -43,8 +43,7 @@ class User(CommonField):
     last_login = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     interests = db.relationship('Interest', secondary=user_hobby, lazy='subquery',
         backref=db.backref('users', lazy=True))
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id'),
-        nullable=False, ondelete="CASCADE")    
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=False)    
     activity = db.relationship('Activity', backref='user', lazy=True)     
     liked = db.relationship('Liked', backref='user', lazy=True)
 
