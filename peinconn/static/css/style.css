@@ -1,3 +1,58 @@
-.page-body {
-  padding: 0 64px;
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  position: relative;
+  min-height: 100vh;
+  background-color: #04042a;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+}
+button,
+select {
+  outline: none;
+  border: none;
+}
+.divider {
+  margin-bottom: 1.5rem;
+  height: 1px;
+  width: 100%;
+  background-color: rgb(84, 81, 81);
+}
+.show-inline {
+  display: inline !important;
+}
+
+.show {
+  display: block !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+.colored-heart {
+  color: red;
+  display: none;
+}
+.body-padding {
+  padding: 0 120px;
 }

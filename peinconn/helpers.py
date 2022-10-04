@@ -1,6 +1,8 @@
-from flask import redirect, request, session
+from flask import redirect, request, session, url_for
 from functools import wraps
 from .extensions import db
+from .models import User, Interest
+from werkzeug.utils import secure_filename
 
 def login_required(f):
     """
@@ -11,8 +13,50 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
             return redirect("/login")
+        else:
+            user_interest = User.query.filter(User.interests.any(id=session['user_id'])).all()
+            if len(user_interest) < 1:
+                return redirect('/add-interests')     
         return f(*args, **kwargs)
     return decorated_function
+
+def user_already_loggedin(f):
+    """
+    Decorate routes to require login.
+    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is not None:
+            user_interest = User.query.filter(User.interests.any(id=session['user_id'])).all()
+            if len(user_interest) < 1:
+                return redirect('/add-interests') 
+            else:
+                return redirect('/')    
+        return f(*args, **kwargs)
+    return decorated_function
+
+def interest_needed(f):
+    """
+    Decorate routes to require login.
+    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user_interest = User.query.filter(User.interests.any(id=session['user_id'])).all()
+        if len(user_interest) > 1:
+            return redirect('/') 
+        return f(*args, **kwargs)
+    return decorated_function    
+
+# def interest_needed():
+#     user_interest = User.query.filter(User.interests.any(id=session['user_id'])).all()
+#     print(user_interest)
+#     print('good')
+#     if len(user_interest) < 1:
+#         return redirect('/add-interests')
+#     else:
+#         return redirect('/')    
 
 def acc_for_uniqueness(modelField, filterCond, **kwargs):
     the_model_field = modelField.query.filter_by(**filterCond).first()
@@ -27,6 +71,14 @@ def acc_for_uniqueness(modelField, filterCond, **kwargs):
         return dbField
 
 def redirect_url(default='index'):
-    return request.args.get('next') or request.referrer or url_for(default)        
+    return request.args.get('next') or request.referrer or url_for(default)
+
+def save_file(filename):    
+
+    ALLOWED_EXTENSIONS = ['webm', 'png', 'jpg', 'jpeg']
+
+    is_allowed_extension = '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    
 
     

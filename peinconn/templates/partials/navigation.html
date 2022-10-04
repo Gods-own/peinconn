@@ -1,23 +1,107 @@
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="">Meet</a>
+    <nav class="top-nav body-padding">
+      <div class="nav-div">
+        <div class="logo-navigation">
+          <div class="brand-logo">
+            <img class="logo" src="{{ url_for('static', filename='images/logo-white.png') }}" width="100" />
+            <button><i class="fa fa-angle-down"></i></button>
+          </div>
+          <ul class="nav-link-text">
+            <li class="nav-list home">
+              <a href="index.html">Home</a>
+            </li>
+            <li class="nav-list addPost">
+              <a href="createActivity.html">Create Post</a>
+            </li>
+            <!-- <li class="nav-list search-icon">
+              <a href="search.html"
+                ><i class="fa fa-search" aria-hidden="true"></i
+              ></a>
+            </li> -->
+            <li class="nav-list events">
+              <a href="event.html">Events</a>
+            </li>
+          </ul>
+        </div>
 
-      <div>
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="">All Posts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">Add Posts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">Edit Posts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">Log In</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">Register</a>
-          </li>
-        </ul>
+        <div>
+          <ul class="nav-link-icon">
+            <li class="nav-list profile">
+              <a
+                ><img
+                  class="nav-profile-img"
+                  src="images/default-Image.png"
+                  width="40"
+                  height="40"
+              /></a>
+              <div class="profile-dropdown">
+                <ul>
+                  <li>
+                    <a href=""
+                      ><i class="fa fa-user" aria-hidden="true"></i
+                      ><span>Invite</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href=""
+                      ><i class="fa fa-sign-out" aria-hidden="true"></i
+                      ><span>Log out</span></a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-list messages">
+              <a href=""
+                ><i class="fa fa-comment" aria-hidden="true"></i
+                ><span class="notification">2</span></a
+              >
+            </li>
+            <li class="nav-list search-icon">
+              <a href="search.html"
+                ><i class="fa fa-search" aria-hidden="true"></i
+              ></a>
+            </li>
+            <li class="nav-list settings">
+              <a href=""><i class="fa fa-cog" aria-hidden="true"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="search-query-container">
+        <form class="home-filter-form">
+          <div class="search-buttons">
+            <button name="country" class="btn search-items" type="submit">
+              Filter By Your Country
+            </button>
+            <select
+              name="age"
+              class="form-control search-items"
+              id="exampleFormControlSelect1"
+            >
+              <option selected value="">Filter By Age</option>
+              <option value="16-24">16-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65-74">65-74</option>
+            </select>
+            <select
+              name="gender"
+              class="form-control search-items"
+              id="exampleFormControlSelect1"
+            >
+              <option selected value="">Filter By Gender</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+            </select>
+          </div>
+        </form>
+        <div class="search-container">
+          <form>
+            <input type="search" placeholder="Search" />
+          </form>
+        </div>
       </div>
     </nav>

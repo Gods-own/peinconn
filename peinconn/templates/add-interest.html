@@ -1,0 +1,26 @@
+{% extends "layouts/form-layout.html" %}
+
+{% block form %}
+ {% if form.interest.errors %}
+    <ul>
+      {% for error in form.interest.errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+{% endif %}
+<form action="/add-interests" method="post">
+  {{ form.hidden_tag() }}
+  <div> 
+     {% for interest, choice in choice_combo %}
+     {{ interest() }}
+    <label for="interest-{{loop.index0}}">
+        {{ choice[0] }}
+    </label>
+    <img src="{{ choice[1] }}" width="200" height="200">
+     {% endfor %}
+  </div>
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>
+{% endblock %}

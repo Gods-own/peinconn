@@ -19,7 +19,7 @@ class CommonField(db.Model):
 
 # db = SQLAlchemy(app, model_class=TimestampModel)
 
-user_hobby = db.Table('user_hobby',
+interests = db.Table('interests',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True))
 
@@ -40,7 +40,7 @@ class User(CommonField):
     is_active = db.Column(db.SmallInteger, default=1, nullable=False)
     date_joined = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     last_login = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    interests = db.relationship('Interest', secondary=user_hobby, lazy='subquery',
+    interests = db.relationship('Interest', secondary=interests, lazy='subquery',
         backref=db.backref('interest_users', lazy=True))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=False)    
     country = db.relationship('Country', backref=db.backref('country_users', lazy=True), lazy=True)    
@@ -49,8 +49,7 @@ class User(CommonField):
         return '<User %r>' % self.username
 
 class Interest(CommonField):
-    hobbies = db.Column(db.String(80), unique=True, nullable=False)
-
+    hobby = db.Column(db.String(80), unique=True, nullable=False) 
 
 class Activity(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),

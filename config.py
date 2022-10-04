@@ -25,7 +25,7 @@ class Config(object):
 
     TEMPLATES_AUTO_RELOAD = True
 
-    UPLOAD_FOLDER = 'peinconn/static/images/users/uploads'
+    MAX_CONTENT_LENGTH = 16 * 1000 * 1000
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "peinconn.db")
@@ -33,3 +33,5 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = True  
 
     SESSION_COOKIE_SECURE = False
+
+    UPLOAD_FOLDER = 'peinconn/static/images/users/uploads'

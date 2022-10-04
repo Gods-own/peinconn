@@ -1,10 +1,3 @@
-from flask_wtf import FlaskForm
-from wtforms import SelectMultipleField, validators, widgets
-from wtforms import ValidationError
-from ..extensions import db
-from ..models import User, Country
-from sqlalchemy.sql import exists
-
 hobbies = {'Reading':'https://f.hubspotusercontent30.net/hubfs/5191137/blog/Blog-10-essential-reads-to-improve-reading-comprehension.jpg', 
 'Music':'https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/YT_Music.jpg', 
 'Sports':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTI1fZ6SlO7pKo8MfWfniskSb5DXHmD7bsHKw&usqp=CAU', 
@@ -21,18 +14,3 @@ hobbies = {'Reading':'https://f.hubspotusercontent30.net/hubfs/5191137/blog/Blog
 'Pottery':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuuyj_WLlhMvS5AjxCwVBAiciDsR3OwBUntw&usqp=CAU', 
 'Coding':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHH4LCiIDn-OGwk8lPD60LVUYGhuFKxmGKOQ&usqp=CAU', 
 'Mixology':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6G78S2q5MfNuanQ4h8bt6uzPgWR6RTRxjxQ&usqp=CAU'}
-
-def multipleInputDataRequired():
-
-    def _multipleInputDataRequired(form, field):
-        if len(field.data) == 0:
-            message = f'Pleace pick at least one Interest'
-            raise ValidationError(message)
-        elif len(field.data) > 2:   
-            message = f'Pleace pick at most two Interests'
-            raise ValidationError(message) 
-
-    return _multipleInputDataRequired     
-
-class InterestForm(FlaskForm):
-    interest = SelectMultipleField( validators=[multipleInputDataRequired()], option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False), choices=[item for item in hobbies.items()])

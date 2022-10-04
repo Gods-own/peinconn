@@ -13,6 +13,7 @@ flask-wtf = "*"
 email-validator = "*"
 python-dotenv = "*"
 flask-migrate = "*"
+flask-restful = "*"
 
 [dev-packages]
 
