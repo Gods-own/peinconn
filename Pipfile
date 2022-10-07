@@ -14,6 +14,8 @@ email-validator = "*"
 python-dotenv = "*"
 flask-migrate = "*"
 flask-restful = "*"
+flask-paginate = "*"
+flask-seeder = "*"
 
 [dev-packages]
 
