@@ -24,9 +24,11 @@ interests = db.Table('interests',
     db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True))
 
 class Country(CommonField):
+    country_abbrev = db.Column(db.String(3), unique=True, nullable=False)
     country = db.Column(db.String(80), unique=True, nullable=False)  
 
-    def __init__(self, country):
+    def __init__(self, country_abbrev, country):
+        self.country_abbrev = country_abbrev
         self.country = country
 
 class User(CommonField):

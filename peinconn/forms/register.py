@@ -6,9 +6,15 @@ import email_validator
 from ..extensions import db
 from ..models import User, Country
 from sqlalchemy.sql import exists
-countries = dict(countries_for_language('en'))
 
-print(db.session)
+# countries = dict(countries_for_language('en'))
+
+# def get_countries():
+#     with app.app_context():
+#         country = Country.query.all()
+#         print(country)
+#         return country
+
 
 def uniqueColumn(tb_name, tb_column):
     message = f'{tb_column} already taken'
@@ -30,7 +36,7 @@ def uniqueColumn(tb_name, tb_column):
 #         if is_data_exists == True:
 #             raise ValidationError(message)
 
-#     return _valueExists     
+#     return _valueExists    
 
 class RegistrationForm(FlaskForm):
     name = StringField('Name', validators=[validators.DataRequired()])      
@@ -38,6 +44,6 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[validators.DataRequired(), validators.Email(message="Email format not correct"), uniqueColumn(User.email, 'email')])    
     date_of_birth = DateField('Date of Birth', validators=[validators.DataRequired()])
     gender = RadioField('Gender', validators=[validators.DataRequired()], choices=[('male', 'Male'), ('female', 'Female')])
-    country = SelectField('Country', validators=[validators.DataRequired()], choices=[item for item in countries.items()])
+    country = SelectField('Country', validators=[validators.DataRequired()])
     password = PasswordField('Password', validators=[validators.DataRequired(), validators.EqualTo('password_confirmation', message='Passwords must match')])  
     password_confirmation = PasswordField('Confirm password', validators=[validators.DataRequired()])

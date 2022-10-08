@@ -14,9 +14,9 @@
      {% for interest, choice in choice_combo %}
      {{ interest() }}
     <label for="interest-{{loop.index0}}">
-        {{ choice[0] }}
+        {{ choice.hobby }}
     </label>
-    <img src="{{ choice[1] }}" width="200" height="200">
+    <img src="{{ choice.hobby_image }}" width="200" height="200">
      {% endfor %}
   </div>
   <div>

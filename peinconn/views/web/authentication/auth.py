@@ -1,12 +1,12 @@
 from flask import Flask, redirect, render_template, request, session, url_for, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
+from country_list import countries_for_language
+from ....helpers import acc_for_uniqueness, login_required, user_already_loggedin, interest_needed
 from ....forms.register import RegistrationForm
 from ....forms.login import LoginForm
 from ....forms.interest import InterestForm
-from country_list import countries_for_language
-from ....models import User, Country, Interest
-from ....helpers import acc_for_uniqueness, login_required, user_already_loggedin, interest_needed
 from ....extensions import db
+from ....models import User, Country, Interest
 
 auth = Blueprint('auth', __name__)
 
@@ -50,24 +50,28 @@ def logout():
 @auth.route('/register', methods=['GET', 'POST'])
 @user_already_loggedin
 def register():
+    country_list = Country.query.all()  
+    countries = [(country.id, country.country.capitalize()) for country in country_list]
+    form = RegistrationForm()
+    form.country.choices = countries
     # countries = dict(countries_for_language('en'))
 
     # print([(key, countries[key]) for key in countries.keys()])
     if request.method == "POST":
-        form = RegistrationForm()
         print(form.password.data, form.country.data)
         if form.validate_on_submit():
             password = generate_password_hash(form.password.data)
 
-            country = acc_for_uniqueness(Country, {'country': form.country.data}, country=form.country.data)
-            print(country)
+            # country = acc_for_uniqueness(Country, {'country': form.country.data}, country=form.country.data)
+            # print(country)
 
-            user = User(username=form.username.data, name=form.name.data, email=form.email.data, password=password, gender=form.gender.data, date_of_birth=form.date_of_birth.data)
-            country.country_users.append(user)
+            # user = User(username=form.username.data, name=form.name.data, email=form.email.data, password=password, gender=form.gender.data, date_of_birth=form.date_of_birth.data)
+            # country.country_users.append(user)
             # country.user = [user]
 
             # db.session.add(user)
-            db.session.add(country)
+            user = User(username=form.username.data, name=form.name.data, email=form.email.data, country_id=form.country.data, password=password, gender=form.gender.data, date_of_birth=form.date_of_birth.data)
+            db.session.add(user)
             db.session.commit()
 
             session["user_id"] = user.id
@@ -77,21 +81,22 @@ def register():
             return redirect('/add-interests')
         else:    
             return render_template("register.html", form=form)
-    else:    
-        form = RegistrationForm()
+    else:  
         return render_template("register.html", form=form)
 
 @auth.route('/add-interests', methods=['GET', 'POST'])
 @login_required
-@user_already_loggedin
 @interest_needed
 def registerInterest():
     # countries = dict(countries_for_language('en'))
 
     # print([(key, countries[key]) for key in countries.keys()])
+    interest_list = Interest.query.all()  
+    interests = [(interest.id, interest.hobby.capitalize()) for interest in interest_list]
     form = InterestForm()
+    form.interest.choices = interests
 
-    choice_combo = zip(form.interest, form.interest.choices)
+    choice_combo = zip(form.interest, interest_list)
 
     if request.method == "POST":
 
@@ -102,9 +107,10 @@ def registerInterest():
             print(user)
             for data in form.interest.data:
 
-                interest = acc_for_uniqueness(Interest, {'hobby': data}, hobby=data)
+                # interest = acc_for_uniqueness(Interest, {'hobby': data}, hobby=data)
+                interest_data = db.session.query(Interest).filter_by(id = data).one()
 
-                user.interests.append(interest)
+                user.interests.append(interest_data)
 
             db.session.add(user)
             db.session.commit()
