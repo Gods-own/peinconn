@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from .extensions import db, ma, migrate, api
+from .extensions import db, ma, migrate, api, seeder
 from .views.web import web
 from .views.api import api_bp
 import os  
@@ -12,6 +12,7 @@ def create_app():
     api.init_app(app)
     db.init_app(app)
     ma.init_app(app)
+    seeder.init_app(app, db)
     migrate.init_app(app, db)
 
     app.register_blueprint(web) 

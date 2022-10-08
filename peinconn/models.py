@@ -26,6 +26,9 @@ interests = db.Table('interests',
 class Country(CommonField):
     country = db.Column(db.String(80), unique=True, nullable=False)  
 
+    def __init__(self, country):
+        self.country = country
+
 class User(CommonField):
     
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -50,6 +53,11 @@ class User(CommonField):
 
 class Interest(CommonField):
     hobby = db.Column(db.String(80), unique=True, nullable=False) 
+    hobby_image = db.Column(db.String, nullable=False)
+
+    def __init__(self, hobby, hobby_image):
+        self.hobby = hobby
+        self.hobby_image = hobby_image
 
 class Activity(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
