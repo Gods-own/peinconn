@@ -1,8 +1,10 @@
-from flask import redirect, request, session, url_for
+from flask import redirect, request, session, url_for, current_app
 from functools import wraps
-from .extensions import db
-from .models import User, Interest
+from peinconn.peinconn.extensions import db
+from peinconn.peinconn.models import User, Interest
 from werkzeug.utils import secure_filename
+import os
+# from peinconn.peinconn import app
 
 def login_required(f):
     """
@@ -73,11 +75,19 @@ def acc_for_uniqueness(modelField, filterCond, **kwargs):
 def redirect_url(default='index'):
     return request.args.get('next') or request.referrer or url_for(default)
 
-def save_file(filename):    
+def save_file(file, filename):    
 
     ALLOWED_EXTENSIONS = ['webm', 'png', 'jpg', 'jpeg']
 
     is_allowed_extension = '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    new_filename = secure_filename(file.filename)
+
+    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+    return new_filename
+
+
 
     
 

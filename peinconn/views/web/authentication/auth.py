@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, url_for, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
 from country_list import countries_for_language
-from ....helpers import acc_for_uniqueness, login_required, user_already_loggedin, interest_needed
+from peinconn.peinconn.helpers.utils import acc_for_uniqueness, login_required, user_already_loggedin, interest_needed
 from ....forms.register import RegistrationForm
 from ....forms.login import LoginForm
 from ....forms.interest import InterestForm

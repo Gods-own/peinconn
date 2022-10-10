@@ -72,6 +72,14 @@ class Activity(CommonField):
     interest = db.relationship('Interest', backref=db.backref('activities_interests', lazy=True), lazy=True)    
     like_no = db.Column(db.Integer, default=0)
 
+    def __init__(self, user_id, activity, picture, like_no, interest):
+        self.user_id = user_id
+        self.activity = activity
+        self.picture = picture
+        # self.interest_id = interest_id
+        self.like_no = like_no
+        self.interest = interest
+
 class Liked(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
         nullable=False)

@@ -10,6 +10,8 @@ class Config(object):
     FLASK_APP = os.getenv("FLASK_APP")
 
     ENV = os.getenv("FLASK_ENV")
+    
+    APP_URL = os.getenv("APP_URL")
 
     FLASK_RUN_PORT = os.getenv("FLASK_RUN_PORT")
 

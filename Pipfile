@@ -16,6 +16,7 @@ flask-migrate = "*"
 flask-restful = "*"
 flask-paginate = "*"
 flask-seeder = "*"
+pyjwt = "==1.4.2"
 
 [dev-packages]
 

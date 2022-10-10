@@ -10,8 +10,8 @@ class UserSchema(ma.Schema):
         country = ma.Nested("CountrySchema") 
 
 #Init User Schema
-user_schema = UserSchema(strict=True)
-users_schema = UserSchema(many=True, strict=True)        
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)        
 
 #Country Schema
 class CountrySchema(ma.Schema):
@@ -19,25 +19,25 @@ class CountrySchema(ma.Schema):
         fields = ('id', 'country', 'created_At', 'updated_At')  
 
 #Init Country Schema
-country_schema = CountrySchema(strict=True)
-countries_schema = CountrySchema(many=True, strict=True) 
+country_schema = CountrySchema()
+countries_schema = CountrySchema(many=True) 
 
 #Interest Schema
 class InterestSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'hobby', 'created_At', 'updated_At')   
+        fields = ('id', 'hobby', 'hobby_image', 'created_At', 'updated_At')   
 
 #Init Interest Schema
-interest_schema = InterestSchema(strict=True)
-interests_schema = InterestSchema(many=True, strict=True)          
+interest_schema = InterestSchema()
+interests_schema = InterestSchema(many=True)          
 
 #Activity Schema
 class ActivitySchema(ma.Schema):
     class Meta:
-        fields = ('id', 'user_id', 'user', 'activity', 'picture', 'interest', 'like_no', 'created_At', 'updated_At')    
+        fields = ('id', 'user_id', 'activity', 'picture', 'interest', 'like_no', 'created_At', 'updated_At')    
 
-        user = ma.Nested("UserSchema")
-        interest = ma.Nested("InterestSchema")  
+    user_id = ma.Nested(UserSchema)
+    interest = ma.Nested(InterestSchema)  
 
         # links = ma.Hyperlinks({
         #     'firstPage':
@@ -56,8 +56,8 @@ class ActivitySchema(ma.Schema):
         # })
 
 #Init Activity Schema
-activity_schema = ActivitySchema(strict=True)
-activities_schema = ActivitySchema(many=True, strict=True)         
+activity_schema = ActivitySchema()
+activities_schema = ActivitySchema(many=True)         
 
 #Liked Schema
 class LikedSchema(ma.Schema):
@@ -65,7 +65,7 @@ class LikedSchema(ma.Schema):
         fields = ('id', 'user_id', 'user', 'activity_id', 'activity', 'created_At', 'updated_At')
 
         user = ma.Nested("UserSchema")
-        activity = ma.Nested("ActivitySchema", exclude("user",)) 
+        activity = ma.Nested("ActivitySchema", exclude=("user",)) 
 
 #Init Liked Schema
-liked_schema = LikedSchema(strict=True)        
+liked_schema = LikedSchema()        
