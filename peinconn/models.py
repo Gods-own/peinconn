@@ -27,9 +27,9 @@ class Country(CommonField):
     country_abbrev = db.Column(db.String(3), unique=True, nullable=False)
     country = db.Column(db.String(80), unique=True, nullable=False)  
 
-    def __init__(self, country_abbrev, country):
-        self.country_abbrev = country_abbrev
-        self.country = country
+    # def __init__(self, country_abbrev, country):
+    #     self.country_abbrev = country_abbrev
+    #     self.country = country
 
 class User(CommonField):
     
@@ -40,7 +40,7 @@ class User(CommonField):
     introduction = db.Column(db.Text, nullable=True)
     gender = db.Column(db.String(10), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
-    userImage = db.Column(db.String, default=f"{basedir}/static/images/default/default-image.png")
+    userImage = db.Column(db.String, default="default-image.png")
     is_admin = db.Column(db.SmallInteger, default=0)
     is_active = db.Column(db.SmallInteger, default=1, nullable=False)
     date_joined = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -52,6 +52,19 @@ class User(CommonField):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    # def __init__(self, username, name, email, password, introduction, gender, date_of_birth, user_image, is_admin, 
+    #     country):
+    #     self.username = username
+    #     self.name = name
+    #     self.email = email
+    #     self.password = password
+    #     self.introduction = introduction
+    #     self.gender = gender
+    #     self.date_of_birth = date_of_birth
+    #     self.is_admin = is_admin
+    #     self.interests = interests
+    #     self.country = country  
 
 class Interest(CommonField):
     hobby = db.Column(db.String(80), unique=True, nullable=False) 
@@ -72,13 +85,13 @@ class Activity(CommonField):
     interest = db.relationship('Interest', backref=db.backref('activities_interests', lazy=True), lazy=True)    
     like_no = db.Column(db.Integer, default=0)
 
-    def __init__(self, user_id, activity, picture, like_no, interest):
-        self.user_id = user_id
-        self.activity = activity
-        self.picture = picture
-        # self.interest_id = interest_id
-        self.like_no = like_no
-        self.interest = interest
+    # def __init__(self, user, activity, picture, like_no, interest):
+    #     self.user = user
+    #     self.activity = activity
+    #     self.picture = picture
+    #     # self.interest_id = interest_id
+    #     self.like_no = like_no
+    #     self.interest = interest
 
 class Liked(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),

@@ -1,4 +1,4 @@
-from flask import redirect, request, session, url_for, current_app
+from flask import redirect, request, session, url_for, current_app, make_response, jsonify
 from functools import wraps
 from peinconn.peinconn.extensions import db
 from peinconn.peinconn.models import User, Interest
@@ -60,6 +60,16 @@ def interest_needed(f):
 #     else:
 #         return redirect('/')    
 
+def uniqueColumn(tb_name, tb_column, column_data):
+    message = f'{tb_column} already exists'
+
+    is_data_exists = db.session.query(db.exists().where(tb_name == column_data)).scalar()
+
+    if is_data_exists == True:
+        return make_response(jsonify({'success': False, 'code': 400, 'message': message}), 400) 
+    else:
+        return True
+
 def acc_for_uniqueness(modelField, filterCond, **kwargs):
     the_model_field = modelField.query.filter_by(**filterCond).first()
     if the_model_field is None:
@@ -81,14 +91,22 @@ def save_file(file, filename):
 
     is_allowed_extension = '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    new_filename = secure_filename(file.filename)
+    if is_allowed_extension:
 
-    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+        new_filename = secure_filename(file.filename)
 
-    return new_filename
+        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
 
+        return new_filename
 
+def remove_file(filename):    
 
-    
+    path = os.getcwd()
+
+    print(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+    os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+   
+
 
     

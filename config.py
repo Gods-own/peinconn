@@ -36,4 +36,4 @@ class DevelopmentConfig(Config):
 
     SESSION_COOKIE_SECURE = False
 
-    UPLOAD_FOLDER = 'peinconn/static/images/users/uploads'
+    UPLOAD_FOLDER = 'peinconn/static'
