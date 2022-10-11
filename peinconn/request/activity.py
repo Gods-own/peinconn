@@ -8,8 +8,12 @@ def activity_request():
     picture = request.files['picture']
 
     user = get_current_user()
+    
+    print(user)
 
     user_model = User.query.filter(User.interests.any(id=user['id'])).all()
+
+    print(user_model)
 
     user_interests = user_model[0].interests
 

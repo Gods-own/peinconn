@@ -1,4 +1,6 @@
 from flask import request, jsonify, make_response
+from peinconn.peinconn.helpers.utils import uniqueColumn
+from peinconn.peinconn.models import User
 
 def registration_request():
     username = request.form.get('username')
@@ -22,5 +24,15 @@ def registration_request():
     if not date_of_birth:
         return make_response(jsonify({'success': False, 'code': 400, 'message': 'Date of birth is required'}), 400)
     if not country_id:
-        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Country ID is required'}), 400)  
+        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Country ID is required'}), 400)
+
+    is_username_unique = uniqueColumn(User.username, 'User', username)   
+
+    if is_username_unique is not True:
+        return is_username_unique      
+
+    is_email_unique = uniqueColumn(User.email, 'Email', email)   
+
+    if is_email_unique is not True:
+        return is_email_unique    
     return True                              

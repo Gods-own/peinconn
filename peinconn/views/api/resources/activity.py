@@ -67,36 +67,55 @@ class ActivityList(Resource):
     @token_required
     def post(self):
 
-        try:
-            activity_values_validation = activity_request()
+        # try:
+        activity_values_validation = activity_request()
 
-            if activity_values_validation == True:
+        if activity_values_validation == True:
 
-                auth_user = get_current_user()
+            auth_user = get_current_user()
 
-                user = User.query.filter_by(id=auth_user['id']).one()
+            user = User.query.filter_by(id=auth_user['id']).one()
 
-                activity = request.form.get('activity')
-                raw_picture = request.files['picture']
-                interest_id = request.form.get('interest_id')
-                like_no = 0
+            activity = request.form.get('activity')
+            raw_picture = request.files['picture']
+            interest_id = request.form.get('interest_id')
+            like_no = 0
 
-                interest = db.session.query(Interest).filter_by(id = interest_id).one()
+            interest = db.session.query(Interest).filter_by(id = interest_id).one()
 
-                file_name = raw_picture.filename
+            file_name = raw_picture.filename
 
-                picture = save_file(raw_picture, file_name)
+            picture = save_file(raw_picture, file_name)
 
-                new_activity = Activity(user=user, activity=activity, picture=picture, interest=interest, like_no=like_no)
+            new_activity = Activity(user=user, activity=activity, picture=picture, interest=interest, like_no=like_no)
 
-                db.session.add(new_activity)
-                db.session.commit()
+            db.session.add(new_activity)
+            db.session.commit()
 
-                activityTransformer = activity_schema.dump(new_activity)
- 
-                return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
-            else:
-                return activity_values_validation     
-        except Exception as e:
-            return make_response(jsonify({'success': False, 'code': e.code , 'message': str(e)}), e.code)     
+            activityTransformer = activity_schema.dump(new_activity)
+
+            return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
+        else:
+            return activity_values_validation     
+        # except Exception as e:
+        #     print(e)
+        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    
         
+
+class UserActivities(Resource):
+    @token_required
+    def get(self):
+
+        try:
+
+            auth_user = get_current_user()
+
+            user_activities = UserActivity.query.filter_by(user_id=auth_user['id']).one()
+
+            activityTransformer = activity_schema.dump(user_activities)
+
+            return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
+  
+        except Exception as e:
+            return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    
+               

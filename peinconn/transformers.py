@@ -25,11 +25,11 @@ class UserSchema(ma.Schema):
         'date_joined', 'last_login', 'interests', 'country', 'created_At', 'updated_At')
 
     interests = ma.List(ma.Nested(InterestSchema))
-    country = ma.Nested(CountrySchema) 
+    country = ma.Nested(CountrySchema)
 
 #Init User Schema
 user_schema = UserSchema()
-users_schema = UserSchema(many=True)                
+users_schema = UserSchema(many=True) 
 
 #Activity Schema
 class ActivitySchema(ma.Schema):
@@ -57,7 +57,21 @@ class ActivitySchema(ma.Schema):
 
 #Init Activity Schema
 activity_schema = ActivitySchema()
-activities_schema = ActivitySchema(many=True)         
+activities_schema = ActivitySchema(many=True)   
+
+#User Details Schema which includes activities, interests e.t.c
+class UserDetailsSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'username', 'email', 'introduction', 'gender', 'date_of_birth', 'userImage', 'is_admin', 'is_active', 
+        'date_joined', 'last_login', 'interests', 'country', 'activities', 'created_At', 'updated_At')
+
+    interests = ma.List(ma.Nested(InterestSchema))
+    country = ma.Nested(CountrySchema) 
+    activities = ma.List(ma.Nested(ActivitySchema(exclude=("user",))))
+
+#Init User Schema
+user_details_schema = UserDetailsSchema()
+users_details_schema = UserDetailsSchema(many=True)       
 
 #Liked Schema
 class LikedSchema(ma.Schema):
