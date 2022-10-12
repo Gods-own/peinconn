@@ -70,17 +70,15 @@ class AllUserDetails(Resource):
     # @token_required
     def get(self):
 
-        AuthUser.paginate_result()
+        try:
 
-        # try:
+            auth_user = get_current_user()
 
-        #     auth_user = get_current_user()
+            user_model = AuthUser.query.filter_by(id=auth_user['id']).one()
 
-        #     user_model = AuthUser.query.filter_by(id=auth_user['id']).one()
+            userTransformer = user_details_schema.dump(user_model)
 
-        #     userTransformer = user_details_schema.dump(user_model)
-
-        #     return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': userTransformer}) 
-        # except Exception as e:
-        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
+            return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': userTransformer}) 
+        except Exception as e:
+            return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
 
