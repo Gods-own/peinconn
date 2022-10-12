@@ -1,9 +1,9 @@
 from flask import request, jsonify, make_response, current_app
 from flask_restful import Resource
 from peinconn.peinconn.extensions import db
-from peinconn.peinconn.transformers import activity_schema
+from peinconn.peinconn.transformers import ActivitySchema, activity_schema, activities_schema
 from peinconn.peinconn.models import Activity as UserActivity, Interest, User
-from peinconn.peinconn.helpers.utils import save_file, remove_file
+from peinconn.peinconn.helpers.utils import save_file, remove_file, get_file_url
 from peinconn.peinconn.request.activity import activity_request
 from peinconn.peinconn.helpers.jwt_auth import token_required, get_current_user
 
@@ -15,15 +15,19 @@ class Activity(Resource):
 
         try:
 
-            print(activity_id)
-
             activity = UserActivity.query.filter_by(id = activity_id).one()
 
             activityTransformer = activity_schema.dump(activity)
 
-            url_tupple = (current_app.config['APP_URL'], 'static', activityTransformer['picture'] )
+            # url_tupple = (current_app.config['APP_URL'], 'static', activityTransformer['picture'] )
 
-            activityTransformer['picture'] = "/".join(url_tupple)
+            # activityTransformer['picture'] = "/".join(url_tupple)
+
+            filename = activityTransformer['picture'] 
+            transformer = activityTransformer
+            transformer_field = 'picture'
+
+            activityTransformer = get_file_url(filename, transformer, transformer_field)
 
             return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer}) 
         except Exception as e:
@@ -67,39 +71,45 @@ class ActivityList(Resource):
     @token_required
     def post(self):
 
-        # try:
-        activity_values_validation = activity_request()
+        try:
+            activity_values_validation = activity_request()
 
-        if activity_values_validation == True:
+            if activity_values_validation == True:
 
-            auth_user = get_current_user()
+                auth_user = get_current_user()
 
-            user = User.query.filter_by(id=auth_user['id']).one()
+                user = User.query.filter_by(id=auth_user['id']).one()
 
-            activity = request.form.get('activity')
-            raw_picture = request.files['picture']
-            interest_id = request.form.get('interest_id')
-            like_no = 0
+                activity = request.form.get('activity')
+                raw_picture = request.files['picture']
+                interest_id = request.form.get('interest_id')
+                like_no = 0
 
-            interest = db.session.query(Interest).filter_by(id = interest_id).one()
+                interest = db.session.query(Interest).filter_by(id = interest_id).one()
 
-            file_name = raw_picture.filename
+                file_name = raw_picture.filename
 
-            picture = save_file(raw_picture, file_name)
+                picture = save_file(raw_picture, file_name)
 
-            new_activity = Activity(user=user, activity=activity, picture=picture, interest=interest, like_no=like_no)
+                new_activity = UserActivity(user=user, activity=activity, picture=picture, interest=interest, like_no=like_no)
 
-            db.session.add(new_activity)
-            db.session.commit()
+                db.session.add(new_activity)
+                db.session.commit()
 
-            activityTransformer = activity_schema.dump(new_activity)
+                activityTransformer = activity_schema.dump(new_activity)
 
-            return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
-        else:
-            return activity_values_validation     
-        # except Exception as e:
-        #     print(e)
-        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    
+                filename = activityTransformer['picture'] 
+                transformer = activityTransformer
+                transformer_field = 'picture'
+
+                activityTransformer = get_file_url(filename, transformer, transformer_field)
+
+                return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
+            else:
+                return activity_values_validation     
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    
         
 
 class UserActivities(Resource):
@@ -110,11 +120,21 @@ class UserActivities(Resource):
 
             auth_user = get_current_user()
 
-            user_activities = UserActivity.query.filter_by(user_id=auth_user['id']).one()
+            user_activities = UserActivity.query.filter_by(user_id=auth_user['id']).all()
 
-            activityTransformer = activity_schema.dump(user_activities)
+            print(user_activities)
 
-            return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
+            new_activities_schema = ActivitySchema(many=True, exclude=('user',))
+
+            activityTransformer = new_activities_schema.dump(user_activities)
+
+            # filename = activityTransformer['picture'] 
+            # transformer = activityTransformer
+            # transformer_field = 'picture'
+
+            # activityTransformer = get_file_url(filename, transformer, transformer_field)
+
+            return jsonify({'success': True, 'code': 200, 'message': 'Activity retrieved Successfully', 'data': activityTransformer})
   
         except Exception as e:
             return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    

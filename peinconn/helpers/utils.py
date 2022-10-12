@@ -107,6 +107,11 @@ def remove_file(filename):
 
     os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
    
+def get_file_url(filename, transformer, transformer_field):
+    url_tupple = (current_app.config['APP_URL'], 'static', filename )
 
+    transformer[transformer_field] = "/".join(url_tupple)
+
+    return transformer
 
     

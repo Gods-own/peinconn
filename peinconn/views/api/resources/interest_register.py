@@ -19,17 +19,17 @@ class RegisterInterest(Resource):
 
                 user = User.query.filter_by(id=auth_user['id']).one()
 
-                # for interest_id in request.form.getlist("interests"):
+                for interest_id in request.form.getlist("interests"):
 
-                #     # interest = acc_for_uniqueness(Interest, {'hobby': data}, hobby=data)
-                #     interest_data = db.session.query(Interest).filter_by(id = interest_id).one()
+                    # interest = acc_for_uniqueness(Interest, {'hobby': data}, hobby=data)
+                    interest_data = db.session.query(Interest).filter_by(id = interest_id).one()
 
-                #     user.interests.append(interest_data)
+                    user.interests.append(interest_data)
 
-                # db.session.add(user)
-                # db.session.commit()
+                db.session.add(user)
+                db.session.commit()
 
-                # return make_response(jsonify({'success': True, 'code': 200, 'message': 'Added Interests successfully'}), 201)
+                return make_response(jsonify({'success': True, 'code': 200, 'message': 'Added Interests successfully'}), 201)
             else:
                 return interest_values_validation     
         except Exception as e:

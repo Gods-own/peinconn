@@ -9,23 +9,19 @@ def interest_register_request():
 
     user_model = User.query.filter(User.interests.any(id=user['id'])).all()
 
-    # user_model = User.query.filter_by(id=user['id']).one()
-
-    print(user_model)
-
     # hhh = User.query.filter(User.interests.any(id=session['user_id'])).all()
 
-    # if not interests:
-    #     return make_response(jsonify({'success': False, 'code': 400, 'message': 'Interests is required'}), 400)
-    # if len(interests) <= 0:
-    #     return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick at least one interests'}), 400)
-    # if len(interests) > 2:
-    #     return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick at most two interests'}), 400)   
-    # if len(user_model) != 0:     
-    #     user_interests = user_model[0].interests
-    #     if len(user_interests) >= 2:
-    #         return make_response(jsonify({'success': False, 'code': 400, 'message': 'User already added two interests'}), 400)
-    #     if len(user_interests) == 1 and len(interests) > 1:
-    #         return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick one interests'}), 400)
+    if not interests:
+        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Interests is required'}), 400)
+    if len(interests) <= 0:
+        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick at least one interests'}), 400)
+    if len(interests) > 2:
+        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick at most two interests'}), 400)   
+    if len(user_model) != 0:     
+        user_interests = user_model[0].interests
+        if len(user_interests) >= 2:
+            return make_response(jsonify({'success': False, 'code': 400, 'message': 'User already added two interests'}), 400)
+        if len(user_interests) == 1 and len(interests) > 1:
+            return make_response(jsonify({'success': False, 'code': 400, 'message': 'Please pick one interests'}), 400)
 
     return True  

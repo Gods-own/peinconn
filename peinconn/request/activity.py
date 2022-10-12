@@ -13,12 +13,6 @@ def activity_request():
 
     user_model = User.query.filter(User.interests.any(id=user['id'])).all()
 
-    print(user_model)
-
-    user_interests = user_model[0].interests
-
-    user_interests_id = [user_interest.id for user_interest in user_interests]
-
     # hhh = User.query.filter(User.interests.any(id=session['user_id'])).all()
 
     if not activity:
@@ -26,8 +20,13 @@ def activity_request():
     if not interest_id:
         return make_response(jsonify({'success': False, 'code': 400, 'message': 'Interest Id is required'}), 400)
     if not picture:
-        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Picture is required'}), 400)    
-    if int(interest_id) not in user_interests_id:        
-        return make_response(jsonify({'success': False, 'code': 400, 'message': 'User does not have this Interest'}), 400) 
+        return make_response(jsonify({'success': False, 'code': 400, 'message': 'Picture is required'}), 400) 
+    if len(user_model) != 0:     
+        user_interests = user_model[0].interests
+
+        user_interests_id = [user_interest.id for user_interest in user_interests]
+
+        if int(interest_id) not in user_interests_id:        
+            return make_response(jsonify({'success': False, 'code': 400, 'message': 'User does not have this Interest'}), 400)       
 
     return True  
