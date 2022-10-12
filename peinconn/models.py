@@ -34,14 +34,14 @@ class Country(CommonField):
 class Activity(CommonField):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
         nullable=False)
-    user = db.relationship('User', backref=db.backref('activity_users', lazy=True), lazy=True) 
+    user = db.relationship('User', back_populates="activities", lazy=True) 
     activity = db.Column(db.Text, nullable=True)
     picture = db.Column(db.String, nullable=True)
     interest_id = db.Column(db.Integer, db.ForeignKey('interest.id'),
         nullable=False) 
     interest = db.relationship('Interest', backref=db.backref('activities_interests', lazy=True), lazy=True)    
     like_no = db.Column(db.Integer, default=0)
-        
+
 
 class User(CommonField):  
     
