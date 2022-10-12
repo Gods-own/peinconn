@@ -5,6 +5,7 @@ import os
 from .extensions import db
 import sqlalchemy as sa
 from datetime import datetime
+from peinconn.peinconn.custom_query import PaginateResult
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -31,7 +32,7 @@ class Country(CommonField):
     #     self.country_abbrev = country_abbrev
     #     self.country = country
 
-class User(CommonField):
+class User(CommonField):  
     
     username = db.Column(db.String(80), unique=True, nullable=False)
     name = db.Column(db.String(80), nullable=False)
@@ -47,13 +48,13 @@ class User(CommonField):
     last_login = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     interests = db.relationship('Interest', secondary=interests, lazy='subquery',
         backref=db.backref('interest_users', lazy=True))
-    activities = db.relationship('Activity', backref=db.backref('user_activities', lazy=True), lazy=True)     
+    activities = db.relationship('Activity', back_populates="user", lazy=True)     
     country_id = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=False)    
     country = db.relationship('Country', backref=db.backref('country_users', lazy=True), lazy=True)    
 
     def __repr__(self):
         return '<User %r>' % self.username
-
+  
     # def __init__(self, username, name, email, password, introduction, gender, date_of_birth, user_image, is_admin, 
     #     country):
     #     self.username = username
@@ -74,17 +75,6 @@ class Interest(CommonField):
     def __init__(self, hobby, hobby_image):
         self.hobby = hobby
         self.hobby_image = hobby_image
-
-class Activity(CommonField):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
-        nullable=False)
-    user = db.relationship('User', backref=db.backref('activity_users', lazy=True), lazy=True) 
-    activity = db.Column(db.Text, nullable=True)
-    picture = db.Column(db.String, nullable=True)
-    interest_id = db.Column(db.Integer, db.ForeignKey('interest.id'),
-        nullable=False) 
-    interest = db.relationship('Interest', backref=db.backref('activities_interests', lazy=True), lazy=True)    
-    like_no = db.Column(db.Integer, default=0)
 
     # def __init__(self, user, activity, picture, like_no, interest):
     #     self.user = user

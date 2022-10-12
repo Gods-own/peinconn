@@ -21,10 +21,6 @@ class User(Resource):
 
             userTransformer = user_schema.dump(user_model)
 
-            url_tupple = (current_app.config['APP_URL'], 'static', userTransformer['userImage'] )
-
-            userTransformer['userImage'] = "/".join(url_tupple)
-
             return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': userTransformer}) 
         except Exception as e:
             return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
@@ -71,22 +67,20 @@ class User(Resource):
 
 class AllUserDetails(Resource):
 
-    @token_required
+    # @token_required
     def get(self):
 
-        try:
+        AuthUser.paginate_result()
 
-            auth_user = get_current_user()
+        # try:
 
-            user_model = AuthUser.query.filter_by(id=auth_user['id']).one()
+        #     auth_user = get_current_user()
 
-            userTransformer = user_details_schema.dump(user_model)
+        #     user_model = AuthUser.query.filter_by(id=auth_user['id']).one()
 
-            url_tupple = (current_app.config['APP_URL'], 'static', userTransformer['userImage'] )
+        #     userTransformer = user_details_schema.dump(user_model)
 
-            userTransformer['userImage'] = "/".join(url_tupple)
-
-            return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': userTransformer}) 
-        except Exception as e:
-            return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
+        #     return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': userTransformer}) 
+        # except Exception as e:
+        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
 

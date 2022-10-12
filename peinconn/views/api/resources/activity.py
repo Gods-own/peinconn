@@ -1,9 +1,10 @@
-from flask import request, jsonify, make_response, current_app
+from flask import request, jsonify, make_response, current_app, url_for
 from flask_restful import Resource
 from peinconn.peinconn.extensions import db
 from peinconn.peinconn.transformers import ActivitySchema, activity_schema, activities_schema
 from peinconn.peinconn.models import Activity as UserActivity, Interest, User
 from peinconn.peinconn.helpers.utils import save_file, remove_file, get_file_url
+from peinconn.peinconn.helpers.pagination import get_pagination
 from peinconn.peinconn.request.activity import activity_request
 from peinconn.peinconn.helpers.jwt_auth import token_required, get_current_user
 
@@ -18,16 +19,6 @@ class Activity(Resource):
             activity = UserActivity.query.filter_by(id = activity_id).one()
 
             activityTransformer = activity_schema.dump(activity)
-
-            # url_tupple = (current_app.config['APP_URL'], 'static', activityTransformer['picture'] )
-
-            # activityTransformer['picture'] = "/".join(url_tupple)
-
-            filename = activityTransformer['picture'] 
-            transformer = activityTransformer
-            transformer_field = 'picture'
-
-            activityTransformer = get_file_url(filename, transformer, transformer_field)
 
             return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer}) 
         except Exception as e:
@@ -68,6 +59,41 @@ class Activity(Resource):
             return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
 
 class ActivityList(Resource):
+
+    @token_required
+    def get(self):
+
+        # try:
+
+        activities = UserActivity.query.order_by(UserActivity.id.asc())
+
+        page = request.args.get('per_page')
+
+        per_page = request.args.get('per_page')
+
+        max_per_page =  12
+
+        if page is not None:
+            page = int(page)
+
+        if per_page is None:
+            per_page = 10
+        else:
+            if per_page > max_per_page:
+                per_page = 10   
+            else:
+                per_page = int(per_page)     
+
+        activities = activities.paginate(page=page, per_page=per_page, max_per_page=max_per_page)
+
+        activityTransformer = activities_schema.dump(activities)
+
+        links = get_pagination('api.activitylist', activities)
+
+        return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer, 'links': links}) 
+        # except Exception as e:
+        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500) 
+
     @token_required
     def post(self):
 
@@ -98,12 +124,6 @@ class ActivityList(Resource):
 
                 activityTransformer = activity_schema.dump(new_activity)
 
-                filename = activityTransformer['picture'] 
-                transformer = activityTransformer
-                transformer_field = 'picture'
-
-                activityTransformer = get_file_url(filename, transformer, transformer_field)
-
                 return jsonify({'success': True, 'code': 200, 'message': 'Activity added Successfully', 'data': activityTransformer})
             else:
                 return activity_values_validation     
@@ -120,7 +140,28 @@ class UserActivities(Resource):
 
             auth_user = get_current_user()
 
-            user_activities = UserActivity.query.filter_by(user_id=auth_user['id']).all()
+            user_activities = UserActivity.query.filter_by(user_id=auth_user['id']).order_by(UserActivity.id.asc())
+
+            page = request.args.get('per_page')
+
+            per_page = request.args.get('per_page')
+
+            max_per_page =  12
+
+            if page is not None:
+                page = int(page)
+
+            if per_page is None:
+                per_page = 10
+            else:
+                if per_page > max_per_page:
+                    per_page = 10   
+                else:
+                    per_page = int(per_page) 
+
+            # user_activities = UserActivity.query.order_by(UserActivity.id.asc())
+
+            user_activities = user_activities.paginate(page=page, per_page=per_page, max_per_page=max_per_page)
 
             print(user_activities)
 
@@ -128,13 +169,9 @@ class UserActivities(Resource):
 
             activityTransformer = new_activities_schema.dump(user_activities)
 
-            # filename = activityTransformer['picture'] 
-            # transformer = activityTransformer
-            # transformer_field = 'picture'
+            links = get_pagination('api.useractivities', user_activities)
 
-            # activityTransformer = get_file_url(filename, transformer, transformer_field)
-
-            return jsonify({'success': True, 'code': 200, 'message': 'Activity retrieved Successfully', 'data': activityTransformer})
+            return jsonify({'success': True, 'code': 200, 'message': 'Activity retrieved Successfully', 'data': activityTransformer, 'links': links})
   
         except Exception as e:
             return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)    

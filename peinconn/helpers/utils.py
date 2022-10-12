@@ -110,6 +110,8 @@ def remove_file(filename):
 def get_file_url(filename, transformer, transformer_field):
     url_tupple = (current_app.config['APP_URL'], 'static', filename )
 
+    print(url_tupple)
+
     transformer[transformer_field] = "/".join(url_tupple)
 
     return transformer

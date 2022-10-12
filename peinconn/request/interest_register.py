@@ -7,7 +7,7 @@ def interest_register_request():
 
     user = get_current_user()
 
-    user_model = User.query.filter(User.interests.any(id=user['id'])).all()
+    user_model = User.query.filter(User.interests.any(User.id==user['id'])).all()
 
     # hhh = User.query.filter(User.interests.any(id=session['user_id'])).all()
 

@@ -1,3 +1,4 @@
+from flask import current_app
 from .extensions import ma
 
 #Country Schema
@@ -26,6 +27,14 @@ class UserSchema(ma.Schema):
 
     interests = ma.List(ma.Nested(InterestSchema))
     country = ma.Nested(CountrySchema)
+    userImage = ma.Method("get_file_url")
+
+    def get_file_url(self, obj):
+        url_tupple = (current_app.config['APP_URL'], 'static', obj.userImage )
+
+        file_url = "/".join(url_tupple)
+
+        return file_url
 
 #Init User Schema
 user_schema = UserSchema()
@@ -38,22 +47,30 @@ class ActivitySchema(ma.Schema):
 
     user = ma.Nested(UserSchema)
     interest = ma.Nested(InterestSchema)  
+    picture = ma.Method("get_file_url")
 
-        # links = ma.Hyperlinks({
-        #     'firstPage':
-        #     'lastPage':
-        #     'prevPage':
-        #     'nextPage':
-        #     'meta': {
-        #         'paging': {
-        #         'paegCount':
-        #         'totalPages':
-        #         'page':
-        #         'hasPrevPage':
-        #         'hasNextPage':
-        #         }
-        #     }
-        # })
+    # links = ma.Hyperlinks({
+    #         'firstPage':
+    #         'lastPage':
+    #         'prevPage':
+    #         'nextPage':
+    #         'meta': {
+    #             'paging': {
+    #             'paegCount':
+    #             'totalPages':
+    #             'page':
+    #             'hasPrevPage':
+    #             'hasNextPage':
+    #             }
+    #         }
+    #     })
+
+    def get_file_url(self, obj):
+        url_tupple = (current_app.config['APP_URL'], 'static', obj.picture )
+
+        file_url = "/".join(url_tupple)
+
+        return file_url
 
 #Init Activity Schema
 activity_schema = ActivitySchema()
@@ -68,6 +85,14 @@ class UserDetailsSchema(ma.Schema):
     interests = ma.List(ma.Nested(InterestSchema))
     country = ma.Nested(CountrySchema) 
     activities = ma.List(ma.Nested(ActivitySchema(exclude=("user",))))
+    userImage = ma.Method("get_file_url")
+
+    def get_file_url(self, obj):
+        url_tupple = (current_app.config['APP_URL'], 'static', obj.userImage )
+
+        file_url = "/".join(url_tupple)
+
+        return file_url
 
 #Init User Schema
 user_details_schema = UserDetailsSchema()
