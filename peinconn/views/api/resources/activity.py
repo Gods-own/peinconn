@@ -2,7 +2,7 @@ from flask import request, jsonify, make_response, current_app, url_for
 from flask_restful import Resource
 from peinconn.peinconn.extensions import db
 from peinconn.peinconn.transformers import ActivitySchema, activity_schema, activities_schema
-from peinconn.peinconn.models import Activity as UserActivity, Interest, User
+from peinconn.peinconn.models import Activity as UserActivity, Interest, User, Liked
 from peinconn.peinconn.helpers.utils import save_file, remove_file, get_file_url
 from peinconn.peinconn.helpers.pagination import get_pagination
 from peinconn.peinconn.request.activity import activity_request
@@ -10,19 +10,16 @@ from peinconn.peinconn.helpers.jwt_auth import token_required, get_current_user
 
 
 class Activity(Resource):
-
     @token_required
     def get(self, activity_id):
-
         try:
-
             activity = UserActivity.query.filter_by(id = activity_id).one()
 
             activityTransformer = activity_schema.dump(activity)
 
             return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer}) 
         except Exception as e:
-            return make_response(jsonify({'success': False, 'code': e.code , 'message': str(e)}), e.code)
+           return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500)
 
     @token_required
     def put(self, activity_id):
@@ -46,7 +43,7 @@ class Activity(Resource):
 
                 picture = save_file(raw_picture, file_name)
 
-                activity_model.activity = request.form.get('activity')
+                activity_model.activity = activity
                 activity_model.picture = picture
                 activity_model.interest = interest
 
@@ -63,36 +60,36 @@ class ActivityList(Resource):
     @token_required
     def get(self):
 
-        # try:
+        try:
 
-        activities = UserActivity.query.order_by(UserActivity.id.asc())
+            activities = UserActivity.query.order_by(UserActivity.id.asc())
 
-        page = request.args.get('per_page')
+            page = request.args.get('per_page')
 
-        per_page = request.args.get('per_page')
+            per_page = request.args.get('per_page')
 
-        max_per_page =  12
+            max_per_page =  12
 
-        if page is not None:
-            page = int(page)
+            if page is not None:
+                page = int(page)
 
-        if per_page is None:
-            per_page = 10
-        else:
-            if per_page > max_per_page:
-                per_page = 10   
+            if per_page is None:
+                per_page = 10
             else:
-                per_page = int(per_page)     
+                if per_page > max_per_page:
+                    per_page = 10   
+                else:
+                    per_page = int(per_page)     
 
-        activities = activities.paginate(page=page, per_page=per_page, max_per_page=max_per_page)
+            activities = activities.paginate(page=page, per_page=per_page, max_per_page=max_per_page)
 
-        activityTransformer = activities_schema.dump(activities)
+            activityTransformer = activities_schema.dump(activities)
 
-        links = get_pagination('api.activitylist', activities)
+            links = get_pagination('api.activitylist', activities)
 
-        return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer, 'links': links}) 
-        # except Exception as e:
-        #     return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500) 
+            return jsonify({'success': True, 'code': 200, 'message': 'Retrieved Activity Successfully', 'data': activityTransformer, 'links': links}) 
+        except Exception as e:
+            return make_response(jsonify({'success': False, 'code': 500, 'message': 'Something went wrong, try again later'}), 500) 
 
     @token_required
     def post(self):
@@ -109,7 +106,6 @@ class ActivityList(Resource):
                 activity = request.form.get('activity')
                 raw_picture = request.files['picture']
                 interest_id = request.form.get('interest_id')
-                like_no = 0
 
                 interest = db.session.query(Interest).filter_by(id = interest_id).one()
 
@@ -117,7 +113,7 @@ class ActivityList(Resource):
 
                 picture = save_file(raw_picture, file_name)
 
-                new_activity = UserActivity(user=user, activity=activity, picture=picture, interest=interest, like_no=like_no)
+                new_activity = UserActivity(user=user, activity=activity, picture=picture, interest=interest)
 
                 db.session.add(new_activity)
                 db.session.commit()

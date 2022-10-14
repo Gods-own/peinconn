@@ -1,5 +1,6 @@
 from flask import current_app
 from .extensions import ma
+import os
 
 #Country Schema
 class CountrySchema(ma.Schema):
@@ -66,7 +67,9 @@ class ActivitySchema(ma.Schema):
     #     })
 
     def get_file_url(self, obj):
-        url_tupple = (current_app.config['APP_URL'], 'static', obj.picture )
+        url_tupple = (current_app.config['APP_URL'], 'static', current_app.config['ACTIVITY_IMAGE_PATH'], obj.picture )
+
+        print(url_tupple)
 
         file_url = "/".join(url_tupple)
 
@@ -88,7 +91,7 @@ class UserDetailsSchema(ma.Schema):
     userImage = ma.Method("get_file_url")
 
     def get_file_url(self, obj):
-        url_tupple = (current_app.config['APP_URL'], 'static', obj.userImage )
+        url_tupple = (current_app.config['APP_URL'], 'static', current_app.config['ACTIVITY_IMAGE_PATH'], obj.userImage)
 
         file_url = "/".join(url_tupple)
 
