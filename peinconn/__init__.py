@@ -1,8 +1,7 @@
 from flask import Flask, request, jsonify
-from .extensions import db, ma, migrate, api, seeder
+from .extensions import db, ma, migrate, api, seeder, socketio
 from .views.web import web
 from .views.api import api_bp
-import os  
 from peinconn import config
 
 def create_app():
@@ -10,6 +9,7 @@ def create_app():
 
     app.config.from_object(config.DevelopmentConfig)
 
+    socketio.init_app(app, manage_session=False)
     api.init_app(app)
     db.init_app(app)
     ma.init_app(app)

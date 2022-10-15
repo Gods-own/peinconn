@@ -17,6 +17,8 @@ flask-restful = "*"
 flask-paginate = "*"
 flask-seeder = "*"
 pyjwt = "==1.4.2"
+flask-socketio = "*"
+eventlet = "*"
 
 [dev-packages]
 

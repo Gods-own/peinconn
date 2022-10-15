@@ -60,7 +60,7 @@ class User(CommonField):
     interests = db.relationship('Interest', secondary=interests, lazy='subquery',
         backref=db.backref('interest_users', lazy=True))
     activities = db.relationship('Activity', back_populates="user", lazy=True)     
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=False)    
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)    
     country = db.relationship('Country', backref=db.backref('country_users', lazy=True), lazy=True)    
 
     def __repr__(self):
@@ -96,12 +96,41 @@ class Interest(CommonField):
     #     self.interest = interest
 
 class Liked(CommonField):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'),
         nullable=False)
-    user = db.relationship('User', backref=db.backref('liked_users', lazy=True), lazy=True)         
-    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'),
+    user = db.relationship('User', back_populates='liked_users', lazy=True)         
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id', ondelete='CASCADE'),
         nullable=False)
-    activity = db.relationship('Activity', backref=db.backref('liked_activities', lazy=True), lazy=True)         
+    activity = db.relationship('Activity', back_populates='liked_activities', lazy=True)         
     is_liked = db.Column(db.SmallInteger, default=0, nullable=False)
+
+class Room(CommonField):
+    room = db.Column(db.String(225), nullable=False)
+    user1_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user1 = db.relationship('User', back_populates="chatter1", lazy=True)
+    user2_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user2 = db.relationship('User', back_populates="chatter2", lazy=True)
+
+class Message(CommonField):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', back_populates="sender", lazy=True) 
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    room = db.relationship('Room', back_populates="dm_room", lazy=True) 
+    content = db.Column(db.Text, nullable=False)
+
+class Notifications(CommonField):
+    notification_user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    notification_user = db.relationship('User', back_populates="sent_to", lazy=True)
+    notification_message_id =  db.Column(db.Integer, db.ForeignKey('message.id', ondelete='CASCADE'), nullable=False)
+    notification_message = db.relationship('Message', back_populates="new_message", lazy=True)
+    notification_read = db.Column(db.SmallInteger, default=0, nullable=False)
+
+class Connected(CommonField):
+    connected_user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    connected_user = db.relationship('User', back_populates="connected_user", lazy=True) 
+    connection_room_id = db.Column(db.Integer, db.ForeignKey('room.id', ondelete='CASCADE'), nullable=False)
+    connection_room = db.relationship('Room', back_populates="connected_room", lazy=True) 
+    channel_name = db.Column(db.Text, nullable=False)   
+
 
 
